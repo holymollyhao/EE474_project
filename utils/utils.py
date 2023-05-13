@@ -6,7 +6,7 @@ def set_openai():
     return model
 
 def construct_message_playlist(hours:int, mood:str, genre:str):
-    query = f"give me a {hours}-h {mood} playlist of {genre} with {hours}"
+    query = f"give me a {hours}-h {mood} playlist of {genre}"
     prompt_for_parsing = ", without additional responses attached on the front and back, just give me a list with numbering starting from 1"
 
     role = f"You are a music curator, who recommends music lists with consistent mood and genere"
@@ -20,7 +20,7 @@ def construct_message_playlist(hours:int, mood:str, genre:str):
 
 def construct_message_image(mood:str, genre:str):
     query = f"Describe a scene where you might listen to a {mood} playlist of {genre}"
-    prompt_for_parsing = ", without additional responses attached on the front and back, just give me a description of the surroundings, as descriptive as you can"
+    prompt_for_parsing = ", without additional responses attached on the front and back, just give me a description of the surroundings, as descriptive as you can, but constrain your output to a maximum of 77 tokens"
 
     role = f"You are a assistant who generates prompts for image generation, who describes a likely scene based on the mood and genere of a music playlist"
 
