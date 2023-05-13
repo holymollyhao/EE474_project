@@ -1,12 +1,17 @@
 from vision_language_models.dreamlike import DreamLike
 from utils import utils
-from apiclient.discovery import build
+from datetime import date, datetime
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
 
 mood = "sentimental"
 genre = "jazz"
 hours = 1
+
+# date for logging
+day = date.today().day
+current_time = datetime.now().strftime("%H:%M:%S")
+date_time = str(day) + '_' + current_time
 
 # for generating responses
 model = utils.set_openai()
@@ -17,12 +22,17 @@ response_playlist = utils.generate_response(model=model, message=message_playlis
 message_image =     utils.construct_message_image(mood=mood, genre=genre)
 response_image =    utils.generate_response(model=model, message=message_image)
 
-print("Response of Playlist: \n", response_playlist)
-print("Response of Image Prompt: ", response_image)
+print("Response of Playlist:\n", response_playlist)
+print("Response of Image Prompt:\n", response_image)
 
 # for image generation
 model = DreamLike()
-model.single_image_generation(response_image, mood=mood, genre=genre)
+model.single_image_generation(response_image, mood=mood, genre=genre, date_time=date_time)
+
+# save playlist respose in to text file
+utils.save_playlist_response(response_playlist, mood=mood, genre=genre, date_time=date_time)
+
+# parsing playlist
 
 # youtube api
 argparser.add_argument("--q", help="Search term", default="Acid Dreams")

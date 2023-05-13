@@ -1,6 +1,5 @@
 import openai
 from apiclient.discovery import build
-from apiclient.errors import HttpError
 
 # Set DEVELOPER_KEY to the API key value from the APIs & auth > Registered apps
 # tab of
@@ -9,20 +8,6 @@ from apiclient.errors import HttpError
 DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
-
-def youtube_search(options):
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-        developerKey=DEVELOPER_KEY)
-
-    # Call the search.list method to retrieve results matching the specified
-    # query term.
-    search_response = youtube.search().list(
-        q=options.q,
-        part="id,snippet",
-        maxResults=options.max_results
-    ).execute()
-
-    return search_response
 
 def set_openai():
     OPENAI_API_KEY = "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"
@@ -33,10 +18,12 @@ def set_openai():
 def construct_message_playlist(hours:int, mood:str, genre:str):
     query = f"give me a {hours}-h {mood} playlist of {genre}"
     prompt_for_parsing = ", without additional responses attached on the front and back, just give me a list with numbering starting from 1"
+    prompt_for_parsing2 = ", in the following format: [number]. [song name] - [artist name]. for example, 1. dynamite - BTS"
 
     role = f"You are a music curator, who recommends music lists with consistent mood and genere"
 
-    query += prompt_for_parsing
+    query += prompt_for_parsing 
+    query += prompt_for_parsing2
     messages = [
             {"role": "system", "content": role},
             {"role": "user", "content": query}
@@ -62,4 +49,24 @@ def generate_response(model, message):
         messages=message
     )
     return response['choices'][0]['message']['content']
+
+def save_playlist_response(response_playlist, mood, genre, date_time):
+    result_path = "./playlist_results"
+    text_file = open(f"{result_path}/mood-{mood}_genre-{genre}_{date_time}_result.txt", "w")
+    text_file.write(response_playlist)
+    text_file.close
+
+def youtube_search(options):
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+        developerKey=DEVELOPER_KEY)
+
+    # Call the search.list method to retrieve results matching the specified
+    # query term.
+    search_response = youtube.search().list(
+        q=options.q,
+        part="id,snippet",
+        maxResults=options.max_results
+    ).execute()
+
+    return search_response
 
