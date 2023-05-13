@@ -1,5 +1,6 @@
 from diffusers import StableDiffusionPipeline
 import torch
+from datetime import date, datetime
 
 
 class DreamLike:
@@ -13,5 +14,9 @@ class DreamLike:
         self.pipe.to("cuda")
 
     def single_image_generation(self, prompt, mood, genre):
+        day = date.today().day
+        current_time = datetime.now().strftime("%H:%M:%S")
+        date_time = str(day) + '_' + current_time
+
         image = self.pipe(prompt).images[0]
-        image.save(f"{self.result_path}/mood-{mood}_genre-{genre}_result.jpg")
+        image.save(f"{self.result_path}/mood-{mood}_genre-{genre}_{date_time}_result.jpg")
