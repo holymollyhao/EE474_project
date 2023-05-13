@@ -23,5 +23,5 @@ def parse_playlist(message):
             music_list.append(line[3:])
             num += 1
 
-    return music_list, num
+    return music_list
 

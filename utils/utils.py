@@ -56,17 +56,25 @@ def save_playlist_response(response_playlist, mood, genre, date_time):
     text_file.write(response_playlist)
     text_file.close
 
-def youtube_search(options):
+def youtube_search(query, max_results):
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
         developerKey=DEVELOPER_KEY)
 
     # Call the search.list method to retrieve results matching the specified
     # query term.
     search_response = youtube.search().list(
-        q=options.q,
+        q=query,
         part="id,snippet",
-        maxResults=options.max_results
+        maxResults=max_results,
+        type="video"
     ).execute()
 
-    return search_response
+    # Add each result to the appropriate list, and then display the lists of
+    # matching videos, channels, and playlists.
+    for search_result in search_response.get("items", []):
+        if search_result["id"]["kind"] == "youtube#video":
+            title = search_result["snippet"]["title"]
+            id = search_result["id"]["videoId"]
+
+    return title, id 
 
