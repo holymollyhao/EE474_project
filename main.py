@@ -1,5 +1,5 @@
 from vision_language_models.dreamlike import DreamLike
-from utils import utils
+from utils import utils, parsing
 from datetime import date, datetime
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
@@ -33,6 +33,8 @@ model.single_image_generation(response_image, mood=mood, genre=genre, date_time=
 utils.save_playlist_response(response_playlist, mood=mood, genre=genre, date_time=date_time)
 
 # parsing playlist
+music_list, len = parsing.parse_playlist(response_playlist)
+print(music_list, len)
 
 # youtube api
 argparser.add_argument("--q", help="Search term", default="Acid Dreams")
