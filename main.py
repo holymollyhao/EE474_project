@@ -1,27 +1,19 @@
 import openai
+from utils import utils
 
-# 발급받은 API 키 설정
-OPENAI_API_KEY = "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"
+model = utils.set_openai()
+message = utils.construct_message_image(mood='chill', genre='city pop')
+response = utils.generate_response(model=model, message=message)
+print(response)
 
-# openai API 키 인증
-openai.api_key = OPENAI_API_KEY
+from diffusers import StableDiffusionPipeline
+import torch
 
-# 모델 - GPT 3.5 Turbo 선택
-model = "gpt-3.5-turbo"
+model_id = "dreamlike-art/dreamlike-diffusion-1.0"
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pipe = pipe.to("cuda")
 
-# 질문 작성하기
-query = "give me a 1-h playlist with chill vibes, without additional responses attached on the front and back, just give me a list with numbering starting from 1"
+prompt = "dreamlikeart, a grungy woman with rainbow hair, travelling between dimensions, dynamic pose, happy, soft eyes and narrow chin, extreme bokeh, dainty figure, long hair straight down, torn kawaii shirt and baggy jeans, In style of by Jordan Grimmer and greg rutkowski, crisp lines and color, complex background, particles, lines, wind, concept art, sharp focus, vivid colors"
+image = pipe(prompt).images[0]
 
-# 메시지 설정하기
-messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": query}
-]
-
-# ChatGPT API 호출하기
-response = openai.ChatCompletion.create(
-    model=model,
-    messages=messages
-)
-answer = response['choices'][0]['message']['content']
-print(answer)
+image.save("./result.jpg")
