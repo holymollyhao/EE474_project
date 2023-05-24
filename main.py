@@ -3,8 +3,8 @@ from utils import utils, parsing
 from datetime import date, datetime
 from apiclient.errors import HttpError
 
-mood = "sentimental"
-genre = "jazz"
+mood = "chill" # "sentimental", "trendy", "chill"
+genre = "city pop" # "jazz", "KPOP", "city pop"
 hours = 1
 
 # date for logging
@@ -41,8 +41,10 @@ id_list = []
 for music in music_list:
     try:
         title, id = utils.youtube_search(music, 1)
-        title_list.append(title)
-        id_list.append(id)
+        if (title != 0):
+            title_list.append(title)
+        if (id != 0):
+            id_list.append(id)
     except HttpError as e:
         print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
 

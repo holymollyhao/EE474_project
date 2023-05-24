@@ -66,9 +66,13 @@ def youtube_search(query, max_results):
         q=query,
         part="id,snippet",
         maxResults=max_results,
-        type="video"
+        type="video",
+        regionCode="KR",
+        videoCategoryId="10"
     ).execute()
 
+    if (len(search_response.get("items", [])) == 0):
+        return 0, 0
     # Add each result to the appropriate list, and then display the lists of
     # matching videos, channels, and playlists.
     for search_result in search_response.get("items", []):
