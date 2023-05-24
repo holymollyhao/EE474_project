@@ -138,4 +138,21 @@ def youtube_create_playlist(title, privacyStatus="public"):
         )
     ).execute()
 
-    return playlists_insert_response["id"]
+    return youtube, playlists_insert_response["id"]
+
+def youtube_insert_videos(youtube, playlist_id, id_list):
+    for videoId in id_list:
+        youtube.playlistItems().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "playlistId": playlist_id,
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": videoId
+                    }
+                }
+            }
+        ).execute()
+
+    return

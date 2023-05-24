@@ -54,4 +54,6 @@ for i in range(len(title_list)):
     print(f"title: {title_list[i]}, url: www.youtube.com/watch?v={id_list[i]}")
 
 # youtube api-playlist
-playlist_id = utils.youtube_create_playlist(playlist_title)
+youtube, playlist_id = utils.youtube_create_playlist(playlist_title)
+print(playlist_id)
+utils.youtube_insert_videos(youtube, playlist_id, id_list)
