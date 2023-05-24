@@ -7,6 +7,8 @@ mood = "chill" # "sentimental", "trendy", "chill"
 genre = "city pop" # "jazz", "KPOP", "city pop"
 hours = 1
 
+playlist_title = f"{hours}-h playlist of {mood}, {genre}"
+
 # date for logging
 day = date.today().day
 current_time = datetime.now().strftime("%H:%M:%S")
@@ -35,7 +37,7 @@ utils.save_playlist_response(response_playlist, mood=mood, genre=genre, date_tim
 music_list = parsing.parse_playlist(response_playlist)
 # print(music_list)
 
-# youtube api
+# youtube api-search
 title_list = []
 id_list = []
 for music in music_list:
@@ -50,3 +52,6 @@ for music in music_list:
 
 for i in range(len(title_list)):
     print(f"title: {title_list[i]}, url: www.youtube.com/watch?v={id_list[i]}")
+
+# youtube api-playlist
+playlist_id = utils.youtube_create_playlist(playlist_title)
