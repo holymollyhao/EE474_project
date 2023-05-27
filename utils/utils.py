@@ -1,3 +1,5 @@
+import os
+
 import openai
 from apiclient.discovery import build
 
@@ -77,4 +79,85 @@ def youtube_search(query, max_results):
             id = search_result["id"]["videoId"]
 
     return title, id 
+
+def download_youtube(list_of_urls = ['https://www.youtube.com/watch?v=NaFd8ucHLuo', 'https://www.youtube.com/watch?v=WMweEpGlu_U', 'https://www.youtube.com/watch?v=4TWR90KJl84']):
+    # from __future__ import unicode_literals
+    import yt_dlp
+    SAVE_PATH='music_dir'
+    class MyLogger(object):
+        def debug(self, msg):
+            pass
+
+        def warning(self, msg):
+            pass
+
+        def error(self, msg):
+            print(msg)
+
+    def my_hook(d):
+        if d['status'] == 'finished':
+            print('Done downloading, now converting ...')
+
+    for (idx, url) in enumerate(list_of_urls):
+        yt_dlp_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
+            'outtmpl': SAVE_PATH + f'/track_{idx}.%(ext)s',
+        }
+        with yt_dlp.YoutubeDL(yt_dlp_opts) as ydl:
+            ydl.download([url])
+
+    output_path_name = generate_concat_music(audio_fpath='./music_dir/')
+    generate_video(audiofpath=output_path_name)
+
+
+def generate_concat_music(audio_fpath=None):
+    from pydub import AudioSegment
+    playlist_songs = []
+    for audio_file in os.listdir(audio_fpath):
+        if '.mp3' in audio_file:
+            playlist_songs.append(AudioSegment.from_mp3(os.path.join(audio_fpath, audio_file)))
+
+    first_song = playlist_songs.pop(0)
+    playlist = first_song
+
+    for song in playlist_songs:
+        # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
+        playlist = playlist.append(song, crossfade=(5 * 1000))
+    playlist = playlist.fade_out(30)
+
+    playlist_length = len(playlist) / (1000 * 60)
+    output_path_name = "%s_minute_playlist.mp3" % playlist_length
+    # lets save it!
+    with open(output_path_name, 'wb') as out_f:
+        playlist.export(out_f, format='mp3')
+    return output_path_name
+
+
+
+
+def generate_video(fileSaveName='debug_playlist', audiofpath='./9.7685_minute_playlist.mp3', imagefpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg'):
+    from moviepy.editor import AudioFileClip, ImageClip
+    from PIL import Image, ImageDraw, ImageFont
+    im = Image.open(imagefpath)
+    draw = ImageDraw.Draw(im)
+    font = ImageFont.truetype(r'./fonts/Open_Sans/opensans_bold_italic.ttf', 350)
+    msg = 'feel_like'
+    _, _, w, h = draw.textbbox((0, 0), msg, font=font)
+    draw.text(((im.width - w) / 2, (im.height - h) / 2), msg, font=font, fill="white")
+
+    im.save(imagefpath)
+    #
+    # audio_clip = AudioFileClip(audiofpath)
+    # image_clip = ImageClip(imagefpath)
+    # video_clip = image_clip.set_audio(audio_clip)
+    # video_clip.duration = audio_clip.duration
+    # video_clip.fps = 60
+    # video_clip.write_videofile(fileSaveName + '_CLIP.mp4')
 
