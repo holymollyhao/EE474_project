@@ -1,0 +1,5 @@
+multimedia@1.0.0 /home/server36/taewon_workspace/multimedia
+├── express@4.18.2
+├── python-shell@5.0.0
+└── socket.io@2.3.0
+
