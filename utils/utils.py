@@ -17,8 +17,7 @@ from oauth2client.tools import argparser, run_flow
 # tab of
 #   https://cloud.google.com/console
 # Please ensure that you have enabled the YouTube Data API for your project.
-# DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
-DEVELOPER_KEY = "AIzaSyD_YeJO6SVbzkaVi63NdUC_OyEsYISFmWs" #temp
+DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
 YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
@@ -198,7 +197,7 @@ class PlayslistVideoGenerator():
 
 
 def youtube_build():
-    CLIENT_SECRETS_FILE = "client_secret_350098661559-kveh7m4c59argu1mb1h2kniajgma6uan.apps.googleusercontent.com.json"
+    CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
     MISSING_CLIENT_SECRETS_MESSAGE = """
     WARNING: Please configure OAuth 2.0
 
