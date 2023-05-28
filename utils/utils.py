@@ -248,7 +248,7 @@ def youtube_create_playlist(youtube, title, privacyStatus="public"):
 
     return playlists_insert_response["id"]
 
-def youtube_insert_videos(youtube, playlist_id, id_list):
+def youtube_insert_music(youtube, playlist_id, id_list):
     for videoId in id_list:
         youtube.playlistItems().insert(
             part="snippet",
