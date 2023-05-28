@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="popup.css" />
+    <title>Feel like</title>
+  </head>
+  <body id="wholepopup">
+    <div id="popup">
+      <div id="head" align="center">
+        <h1>Feel Like</h1>
+      </div>
+      <hr />
+      <div id="image" align="center">
+        <img
+          src="media/feel_like.png"
+          id="hydrateImage"
+          width="160"
+          height="160"
+        />
+      </div>
+      <hr />
+      <div class="popupitem">
+        <div id="onoff_text">
+          <p>Hour</p>
+        </div>
+        <div id="onoff">
+          <label class="switch">
+            <input type="text" id="hours" placeholder="1" />
+          </label>
+        </div>
+      </div>
+      <hr />
+      <div class="popupitem">
+        <div id="onoff_text">
+          <p>Mood</p>
+        </div>
+        <div id="onoff">
+          <label class="switch">
+            <input type="text" id="mood" placeholder="sentimental" />
+          </label>
+        </div>
+      </div>
+      <hr />
+      <div class="popupitem">
+        <div id="onoff_text">
+          <p>Genre</p>
+        </div>
+        <div id="onoff">
+          <label class="switch">
+            <input type="text" id="genre" placeholder="jazz" />
+          </label>
+        </div>
+      </div>
+      <hr />
+      <div class="popupitem" align="center">
+        <div id="button">
+          <input
+            class="button"
+            type="button"
+            id="generate_button"
+            value="Make Playlist!"
+          />
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -79,10 +79,19 @@ def save_playlist_response(response_playlist, mood, genre, date_time):
     text_file.write(response_playlist)
     text_file.close
 
-def youtube_search(query, max_results):
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-        developerKey=DEVELOPER_KEY)
+def generate_youtube_credentials(auth_token="ya29.a0AWY7CknUMyKUr5ZvIw6zLt6AHHmjafCAV6hXNgNrnqi4npDjVtDgP8MrCr-BikTXKZNkMk5PUW7RS_VfpPjCuxFSJv1WWXB0zC0KIBmVOrO2PQxHBe9h3Cnpxkjj4SOIyqAXsiepT3TdJ-wyWW9-CqP9WEoUaCgYKAe0SARMSFQG1tDrpRxHeIgh4t9Aq2QTOLCtjUg0163"):
+    from googleapiclient.discovery import build
+    from oauth2client import client, GOOGLE_TOKEN_URI
+    # Obtain the token using chrome.identity.getAuthToken
+    token = auth_token
+    # Create credentials from the token
+    credentials = client.AccessTokenCredentials(token, "MY_USER_AGENT")
 
+    # Build the YouTube service with authorized credentials
+    youtube = build("youtube", "v3", credentials=credentials)
+    return youtube
+
+def youtube_search(youtube, query, max_results):
     # Call the search.list method to retrieve results matching the specified
     # query term.
     search_response = youtube.search().list(
@@ -196,39 +205,49 @@ class PlayslistVideoGenerator():
         video_clip.write_videofile(videoname + '_CLIP.mp4')
 
 
-def youtube_build():
-    CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
-    MISSING_CLIENT_SECRETS_MESSAGE = """
-    WARNING: Please configure OAuth 2.0
-
-    To make this sample run you will need to populate the client_secrets.json file
-    found at:
-
-    %s
-
-    with information from the API Console
-    https://console.cloud.google.com/
-
-    For more information about the client_secrets.json file format, please visit:
-    https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-    """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                    CLIENT_SECRETS_FILE))
-
-    flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
-      message=MISSING_CLIENT_SECRETS_MESSAGE,
-        scope=YOUTUBE_READ_WRITE_SCOPE)
-
-    storage = Storage("%s-oauth2.json" % sys.argv[0])
-    credentials = storage.get()
-
-    if credentials is None or credentials.invalid:
-        flags = argparser.parse_args()
-        credentials = run_flow(flow, storage, flags)
-
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-        http=credentials.authorize(httplib2.Http()))
-    
-    return youtube
+# def youtube_build():
+#     # CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
+#     # MISSING_CLIENT_SECRETS_MESSAGE = """
+#     # WARNING: Please configure OAuth 2.0
+#     #
+#     # To make this sample run you will need to populate the client_secrets.json file
+#     # found at:
+#     #
+#     # %s
+#     #
+#     # with information from the API Console
+#     # https://console.cloud.google.com/
+#     #
+#     # For more information about the client_secrets.json file format, please visit:
+#     # https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
+#     # """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
+#     #                                 CLIENT_SECRETS_FILE))
+#     #
+#     # flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
+#     #   message=MISSING_CLIENT_SECRETS_MESSAGE,
+#     #     scope=YOUTUBE_READ_WRITE_SCOPE)
+#     #
+#     # storage = Storage("%s-oauth2.json" % sys.argv[0])
+#     # credentials = storage.get()
+#     #
+#     # if credentials is None or credentials.invalid:
+#     #     flags = argparser.parse_args()
+#     #     credentials = run_flow(flow, storage, flags)
+#     #
+#     # youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+#     #     http=credentials.authorize(httplib2.Http()))\
+#     from googleapiclient.discovery import build
+#     from oauth2client import client, GOOGLE_TOKEN_URI
+#     # Obtain the token using chrome.identity.getAuthToken
+#     token = "ya29.a0AWY7CknUMyKUr5ZvIw6zLt6AHHmjafCAV6hXNgNrnqi4npDjVtDgP8MrCr-BikTXKZNkMk5PUW7RS_VfpPjCuxFSJv1WWXB0zC0KIBmVOrO2PQxHBe9h3Cnpxkjj4SOIyqAXsiepT3TdJ-wyWW9-CqP9WEoUaCgYKAe0SARMSFQG1tDrpRxHeIgh4t9Aq2QTOLCtjUg0163"
+#
+#     # Create credentials from the token
+#     credentials = client.AccessTokenCredentials(token, "MY_USER_AGENT")
+#
+#     # Build the YouTube service with authorized credentials
+#     youtube = build("youtube", "v3", credentials=credentials)
+#     print("youtube build complete!")
+#     return youtube
 
 def youtube_create_playlist(youtube, title, privacyStatus="public"):
     # This code creates a new, private playlist in the authorized user's channel.

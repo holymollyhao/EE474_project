@@ -4,7 +4,7 @@ import os
 
 
 class DreamLike:
-    def __init__(self, model_id="dreamlike-art/dreamlike-photoreal-2.0", result_path="./image_results"):
+    def __init__(self, model_id="dreamlike-art/dreamlike-photoreal-1.0", result_path="./image_results"):
         # model setup
         self.model_id = model_id
         self.result_path = result_path

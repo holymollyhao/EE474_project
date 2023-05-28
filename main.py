@@ -41,12 +41,15 @@ def main(args):
     music_list = parsing.parse_playlist(response_playlist)
     # print(music_list)
 
+    # youtube api-playlist
+    # authentication
+    youtube = utils.generate_youtube_credentials(args.token)
     # youtube api-search
     title_list = []
     id_list = []
     for music in music_list:
         try:
-            title, id = utils.youtube_search(music, 1)
+            title, id = utils.youtube_search(youtube, music, 1)
             if (title != 0):
                 title_list.append(title)
             if (id != 0):
@@ -57,11 +60,10 @@ def main(args):
     for i in range(len(title_list)):
         print(f"title: {title_list[i]}, url: www.youtube.com/watch?v={id_list[i]}")
 
-    # youtube api-playlist
-    youtube = utils.youtube_build()
+
     #
     playlist_id = utils.youtube_create_playlist(youtube, playlist_title)
-    # print(playlist_id)
+    print(f'playlist_id is : {playlist_id}')
     utils.youtube_insert_music(youtube, playlist_id, id_list)
     # utils.youtube_video_upload(youtube, title, file)
     # from utils.utils import download_youtube
@@ -78,6 +80,7 @@ def parse_arguments(argv):
                         help='genre')
     parser.add_argument('--mood', type=str, default='sentimental',
                         help='mood')
+    parser.add_argument('--token', type=str, help='token')
     return parser.parse_args()
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ io.sockets.on('connection', function(socket) {
     // const parsedData = JSON.parse(jsonData);
 
     // Execute the Python script as a child process
-    exec(`python main.py --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}"`, (error, stdout, stderr) => {
+    exec(`python main.py --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}"`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing Python script: ${error.message}`);
         return;
