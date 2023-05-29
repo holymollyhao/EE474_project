@@ -43,7 +43,9 @@ def main(args):
 
     # youtube api-playlist
     # authentication
+    print(args.token)
     youtube = utils.generate_youtube_credentials(args.token)
+    #
     # youtube api-search
     title_list = []
     id_list = []

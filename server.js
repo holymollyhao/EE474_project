@@ -8,10 +8,10 @@ const { exec } = require('child_process');
 io.sockets.on('connection', function(socket) {
 	console.log('User connected')
 
-    socket.on('message', function(data) {
-        console.log(data)
-        io.emit('respond', data);
-    });
+    // socket.on('message', function(data) {
+    //     console.log(data)
+    //     io.emit('respond', data);
+    // });
 
     // Handle run script request
     socket.on('run_script', (jsonData) => {
@@ -24,12 +24,13 @@ io.sockets.on('connection', function(socket) {
     exec(`python main.py --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}"`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing Python script: ${error.message}`);
+        socket.emit('script_response', {status: 0})
         return;
       }
       console.log('script response!')
       console.log(stdout)
       // Emit the script response to the client
-      socket.emit('script_response', stdout);
+      socket.emit('script_response', {status: 1})
     })
     });
 

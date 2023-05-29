@@ -1,21 +1,32 @@
-// // Get reference to background page.
-// const bgPage = chrome.extension.getBackgroundPage();
-// // Sign in with popup, typically attached to a button click.
-// bgPage.signInWithPopup();
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(request);
+  if (request.message === "send_to_server") {
+    chrome.identity.getAuthToken({ interactive: true }, function (token) {
+      console.log("token is :");
+      console.log(token);
 
-chrome.identity.getAuthToken({ interactive: true }, function (token) {
-  // Use the token.
-  console.log(token);
-  chrome.storage.sync.set({ access_token: token });
-  // sendResponse({ access_token: token });
-});
+      const jsonData = {
+        hours: request.jsonData.hours,
+        mood: request.jsonData.mood,
+        genre: request.jsonData.genre,
+        access_token: token,
+      };
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "getAccessToken") {
-    chrome.storage.sync.get("access_token", function (data) {
-      var accessToken = data.access_token;
-      sendResponse({ access_token: accessToken });
+      var socket = io.connect("http://server36.mli.kr:5000/");
+      socket.on("connect", function () {
+        socket.emit("run_script", jsonData);
+      });
+
+      socket.on("script_response", function (response) {
+        if (response.status == 1) {
+          alert(`Music uploaded!`);
+        } else {
+          alert(
+            `Music upload failed ㅠㅜ!\nPlease try again after some time...`
+          );
+        }
+        socket.close();
+      });
     });
-    return true; // To indicate that sendResponse will be called asynchronously
   }
 });

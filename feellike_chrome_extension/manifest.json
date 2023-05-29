@@ -13,8 +13,8 @@
     "default_title": "Feel Like"
   },
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "scripts": ["background.js", "socket.io/socket.io.js"],
+    "persistent": false
   },
   "oauth2": {
     "client_id": "233587416449-1fvgqp940knj4mjemog5c4l387m6q0l1.apps.googleusercontent.com",

@@ -79,13 +79,14 @@ def save_playlist_response(response_playlist, mood, genre, date_time):
     text_file.write(response_playlist)
     text_file.close
 
-def generate_youtube_credentials(auth_token="ya29.a0AWY7CknUMyKUr5ZvIw6zLt6AHHmjafCAV6hXNgNrnqi4npDjVtDgP8MrCr-BikTXKZNkMk5PUW7RS_VfpPjCuxFSJv1WWXB0zC0KIBmVOrO2PQxHBe9h3Cnpxkjj4SOIyqAXsiepT3TdJ-wyWW9-CqP9WEoUaCgYKAe0SARMSFQG1tDrpRxHeIgh4t9Aq2QTOLCtjUg0163"):
+def generate_youtube_credentials(auth_token):
     from googleapiclient.discovery import build
     from oauth2client import client, GOOGLE_TOKEN_URI
     # Obtain the token using chrome.identity.getAuthToken
     token = auth_token
     # Create credentials from the token
-    credentials = client.AccessTokenCredentials(token, "MY_USER_AGENT")
+    credentials = client.AccessTokenCredentials(access_token=token, user_agent="pythonclient")
+    # credentials.refresh(httplib2.Http())
 
     # Build the YouTube service with authorized credentials
     youtube = build("youtube", "v3", credentials=credentials)

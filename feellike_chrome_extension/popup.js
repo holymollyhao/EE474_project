@@ -1,45 +1,39 @@
+// Dark Mode toggle functionality
+const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+const body = document.querySelector("body");
+const container = document.querySelector(".container");
+const labels = document.querySelectorAll("label");
+const inputs = document.querySelectorAll("input");
+const buttons = document.querySelectorAll(".button");
+
+function toggleDarkMode() {
+  body.classList.toggle("dark-mode");
+  container.classList.toggle("dark-mode");
+
+  labels.forEach((label) => label.classList.toggle("dark-mode"));
+  inputs.forEach((input) => input.classList.toggle("dark-mode"));
+  buttons.forEach((button) => button.classList.toggle("dark-mode"));
+}
+
+function setDarkModeAccordingToSystemPreference() {
+  if (prefersDarkMode.matches) {
+    toggleDarkMode();
+  }
+}
+
+setDarkModeAccordingToSystemPreference();
+
 var hours = document.getElementById("hours");
 var mood = document.getElementById("mood");
 var genre = document.getElementById("genre");
 var generate_button = document.querySelector(".button");
-
-// chrome.runtime.sendMessage({ method: "getToken" }, function (response) {
-//   if (response && response.access_token) {
-//     console.log("within get token!!");
-//     console.log(response.data);
-//   }
-// });
+chrome.runtime.sendMessage({ message: "" });
 
 generate_button.onclick = function () {
-  chrome.storage.local.set({ hours: hours.value });
-  chrome.storage.local.set({ mood: mood.value });
-  // chrome.storage.local.set({ genre: genre.value });
-  chrome.storage.local.set({ genre: genre.value }, function () {
-    console.log("safely saved!");
-  });
-
-  chrome.storage.sync.get("access_token", function (data) {
-    var accessToken = data.access_token;
-    const jsonData = {
-      hours: hours.value,
-      mood: mood.value,
-      genre: genre.value,
-      access_token: accessToken,
-    };
-    console.log("jsonData is :");
-    console.log(jsonData);
-    var socket = io.connect("http://server36.mli.kr:5000/");
-    socket.on("connect", function () {
-      socket.emit("run_script", jsonData);
-    });
-    socket.on("script_response", function (response) {
-      hours.value = "";
-      mood.value = "";
-      genre.value = "";
-      alert(
-        `Generate ${hours.value}-h playlist of ${mood.value} ${genre.value}!`
-      );
-      socket.close();
-    });
-  });
+  const jsonData = {
+    hours: hours.value,
+    mood: mood.value,
+    genre: genre.value,
+  };
+  chrome.runtime.sendMessage({ message: "send_to_server", jsonData: jsonData });
 };
