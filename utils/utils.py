@@ -17,7 +17,8 @@ from oauth2client.tools import argparser, run_flow
 # tab of
 #   https://cloud.google.com/console
 # Please ensure that you have enabled the YouTube Data API for your project.
-DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
+# DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
+DEVELOPER_KEY = "AIzaSyD_YeJO6SVbzkaVi63NdUC_OyEsYISFmWs" #temp
 YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
@@ -115,101 +116,91 @@ def youtube_search(query, max_results):
             title = search_result["snippet"]["title"]
             id = search_result["id"]["videoId"]
 
-    return title, id
+    return title, id 
 
-class PlayslistVideoGenerator():
-    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', save_path='./music_dir', save_audio_path='./audio_dir'):
-        self.list_of_urls = list_of_urls
-        self.cover_imgpath = cover_imgpath
-        self.save_path = save_path
-        self.save_audio_path = save_audio_path
-        self.concat_save_path = None
+def download_youtube(list_of_urls = ['https://www.youtube.com/watch?v=NaFd8ucHLuo', 'https://www.youtube.com/watch?v=WMweEpGlu_U', 'https://www.youtube.com/watch?v=4TWR90KJl84']):
+    # from __future__ import unicode_literals
+    import yt_dlp
+    SAVE_PATH='music_dir'
+    class MyLogger(object):
+        def debug(self, msg):
+            pass
 
-        if not os.path.exists(self.save_path):
-            os.makedirs(self.save_path)
+        def warning(self, msg):
+            pass
 
-    def download(self):
-        import yt_dlp
-        SAVE_PATH = self.save_path
+        def error(self, msg):
+            print(msg)
 
-        class MyLogger(object):
-            def debug(self, msg):
-                pass
+    def my_hook(d):
+        if d['status'] == 'finished':
+            print('Done downloading, now converting ...')
 
-            def warning(self, msg):
-                pass
+    for (idx, url) in enumerate(list_of_urls):
+        yt_dlp_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
+            'outtmpl': SAVE_PATH + f'/track_{idx}.%(ext)s',
+        }
+        with yt_dlp.YoutubeDL(yt_dlp_opts) as ydl:
+            ydl.download([url])
 
-            def error(self, msg):
-                print(msg)
+    output_path_name = generate_concat_music(audio_fpath='./music_dir/')
+    generate_video(audiofpath=output_path_name)
 
-        def my_hook(d):
-            if d['status'] == 'finished':
-                print('Done downloading, now converting ...')
 
-        for (idx, url) in enumerate(self.list_of_urls):
-            yt_dlp_opts = {
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
-                'logger': MyLogger(),
-                'progress_hooks': [my_hook],
-                'outtmpl': SAVE_PATH + f'/track_{idx}.%(ext)s',
-            }
-            with yt_dlp.YoutubeDL(yt_dlp_opts) as ydl:
-                ydl.download([url])
+def generate_concat_music(audio_fpath=None):
+    from pydub import AudioSegment
+    playlist_songs = []
+    for audio_file in os.listdir(audio_fpath):
+        if '.mp3' in audio_file:
+            playlist_songs.append(AudioSegment.from_mp3(os.path.join(audio_fpath, audio_file)))
 
-    def create_audio(self):
-        from pydub import AudioSegment
-        playlist_songs = []
-        for audio_file in os.listdir(self.save_path):
-            if '.mp3' in audio_file:
-                playlist_songs.append(AudioSegment.from_mp3(os.path.join(self.save_path, audio_file)))
+    first_song = playlist_songs.pop(0)
+    playlist = first_song
 
-        first_song = playlist_songs.pop(0)
-        playlist = first_song
+    for song in playlist_songs:
+        # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
+        playlist = playlist.append(song, crossfade=(5 * 1000))
+    playlist = playlist.fade_out(30)
 
-        for song in playlist_songs:
-            # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
-            playlist = playlist.append(song, crossfade=(5 * 1000))
-        playlist = playlist.fade_out(30)
+    playlist_length = len(playlist) / (1000 * 60)
+    output_path_name = "%s_minute_playlist.mp3" % playlist_length
+    # lets save it!
+    with open(output_path_name, 'wb') as out_f:
+        playlist.export(out_f, format='mp3')
+    return output_path_name
 
-        playlist_length = len(playlist) / (1000 * 60)
-        output_path_name = "%s_minute_playlist.mp3" % playlist_length
-        output_path_name = os.path.join(self.save_audio_path, output_path_name)
 
-        # lets save it!
-        with open(output_path_name, 'wb') as out_f:
-            playlist.export(out_f, format='mp3')
-        self.concat_save_path = output_path_name
 
-    def create_video(self):
-        videoname = 'debugvideo'
-        audiofpath = self.concat_save_path
-        imagefpath = self.cover_imgpath
-        from moviepy.editor import AudioFileClip, ImageClip
-        from PIL import Image, ImageDraw, ImageFont
-        im = Image.open(imagefpath)
-        draw = ImageDraw.Draw(im)
-        font = ImageFont.truetype(r'./fonts/Open_Sans/opensans_bold_italic.ttf', 350)
-        msg = 'feel_like'
-        _, _, w, h = draw.textbbox((0, 0), msg, font=font)
-        draw.text(((im.width - w) / 2, (im.height - h) / 2), msg, font=font, fill="white")
 
-        im.save(imagefpath)
-        #
-        audio_clip = AudioFileClip(audiofpath)
-        image_clip = ImageClip(imagefpath)
-        video_clip = image_clip.set_audio(audio_clip)
-        video_clip.duration = audio_clip.duration
-        video_clip.fps = 60
-        video_clip.write_videofile(videoname + '_CLIP.mp4')
+def generate_video(fileSaveName='debug_playlist', audiofpath='./9.7685_minute_playlist.mp3', imagefpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg'):
+    from moviepy.editor import AudioFileClip, ImageClip
+    from PIL import Image, ImageDraw, ImageFont
+    im = Image.open(imagefpath)
+    draw = ImageDraw.Draw(im)
+    font = ImageFont.truetype(r'./fonts/Open_Sans/opensans_bold_italic.ttf', 350)
+    msg = 'feel_like'
+    _, _, w, h = draw.textbbox((0, 0), msg, font=font)
+    draw.text(((im.width - w) / 2, (im.height - h) / 2), msg, font=font, fill="white")
 
+    im.save(imagefpath)
+    #
+    # audio_clip = AudioFileClip(audiofpath)
+    # image_clip = ImageClip(imagefpath)
+    # video_clip = image_clip.set_audio(audio_clip)
+    # video_clip.duration = audio_clip.duration
+    # video_clip.fps = 60
+    # video_clip.write_videofile(fileSaveName + '_CLIP.mp4')
 
 def youtube_build():
-    CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
+    CLIENT_SECRETS_FILE = "client_secret_350098661559-kveh7m4c59argu1mb1h2kniajgma6uan.apps.googleusercontent.com.json"
     MISSING_CLIENT_SECRETS_MESSAGE = """
     WARNING: Please configure OAuth 2.0
 
@@ -259,7 +250,7 @@ def youtube_create_playlist(youtube, title, privacyStatus="public"):
 
     return playlists_insert_response["id"]
 
-def youtube_insert_music(youtube, playlist_id, id_list):
+def youtube_insert_videos(youtube, playlist_id, id_list):
     for videoId in id_list:
         youtube.playlistItems().insert(
             part="snippet",

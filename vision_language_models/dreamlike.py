@@ -1,6 +1,5 @@
 from diffusers import StableDiffusionPipeline
 import torch
-import os
 
 
 class DreamLike:
@@ -10,7 +9,6 @@ class DreamLike:
         self.result_path = result_path
 
         # pipeline setup
-        # commandline_args = os.environ.get('COMMANDLINE_ARGS', "--skip-torch-cuda-test --no-half")
         self.pipe = StableDiffusionPipeline.from_pretrained(self.model_id, torch_dtype=torch.float16)
         self.pipe.to("cuda")
 
