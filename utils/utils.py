@@ -92,6 +92,54 @@ def generate_youtube_credentials(auth_token):
     youtube = build("youtube", "v3", credentials=credentials)
     return youtube
 
+def music_validity_check(music_list:list):
+    import requests
+
+    url = "https://accounts.spotify.com/api/token"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": "2f01a5b72ffc40f1b063ab40ead654ae",
+        "client_secret": "78e0836263d24590b5670ddc434c18e5"
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check the response status code
+    if response.status_code == 200:
+        access_token = response.json()["access_token"]
+        # print("Access token:", access_token)
+
+        output_music_list = []
+        for music in music_list:
+            search_url = "https://api.spotify.com/v1/search"
+            search_headers = {
+                "Authorization": f"Bearer {access_token}"
+            }
+            search_params = {
+                "q": f"{str(music)}",
+                "limit": 1,
+                "type": "track",
+                "include_external": "audio"
+            }
+            response = requests.get(search_url, headers=search_headers, params=search_params).json()
+
+            if len(response):
+                response = response["tracks"]["items"]
+                # print(response)
+                song_name = response[0]['name']
+                artist_name = response[0]['artists'][0]['name']
+
+                print(f"{song_name} - {artist_name}")
+                output_music_list.append(f"{song_name} - {artist_name}")
+
+        return output_music_list
+    else:
+        print("Error:", response.text)
+        return music_list
+
+
+
 def youtube_search(youtube, query, max_results):
     # Call the search.list method to retrieve results matching the specified
     # query term.

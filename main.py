@@ -39,6 +39,7 @@ def main(args):
 
     # parsing playlist
     music_list = parsing.parse_playlist(response_playlist)
+    music_list = utils.music_validity_check(music_list)
     # print(music_list)
 
     # youtube api-playlist
