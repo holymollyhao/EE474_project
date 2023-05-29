@@ -130,7 +130,7 @@ def music_validity_check(music_list:list):
                 song_name = response[0]['name']
                 artist_name = response[0]['artists'][0]['name']
 
-                print(f"{song_name} - {artist_name}")
+                # print(f"{song_name} - {artist_name}")
                 output_music_list.append(f"{song_name} - {artist_name}")
 
         return output_music_list
