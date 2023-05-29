@@ -80,6 +80,18 @@ def save_playlist_response(response_playlist, mood, genre, date_time):
     text_file.write(response_playlist)
     text_file.close
 
+def read_playlist(mood, genre, date_time):
+    result_path = "./playlist_results"
+    with open(f"{result_path}/mood-{mood}_genre-{genre}_{date_time}_result.txt", "r") as file: 
+        song_list = [line.strip() for line in file]
+    return song_list
+
+def save_audio_features(audio_features, mood, genre, date_time):
+    result_path = "./playlist_results"
+    with open(f"{result_path}/mood-{mood}_genre-{genre}_{date_time}_audio_features.txt", "w") as file:
+        for feature in audio_features:
+            file.write(str(feature) + "\n")
+
 def youtube_search(query, max_results):
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
         developerKey=DEVELOPER_KEY)
