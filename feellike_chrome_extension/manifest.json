@@ -17,7 +17,7 @@
     "persistent": false
   },
   "oauth2": {
-    "client_id": "233587416449-1fvgqp940knj4mjemog5c4l387m6q0l1.apps.googleusercontent.com",
+    "client_id": "233587416449-hahm7c9sj6l553m7b600m37budi1re3o.apps.googleusercontent.com",
     "scopes": ["https://www.googleapis.com/auth/youtube"]
   },
   "externally_connectable": {

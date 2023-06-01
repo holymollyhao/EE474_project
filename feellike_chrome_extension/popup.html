@@ -258,7 +258,12 @@
       }
 
       .button-container {
+        padding-top: 10px;
         text-align: center;
+      }
+
+      .button-container button {
+        width: 100%;
       }
 
       .button {
@@ -363,6 +368,10 @@
       .back-button:hover {
         background-color: #e91e63;
       }
+
+      #button2 {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -399,12 +408,20 @@
       </div>
 
       <div id="playlistContainer" class="hidden">
-        <div class="wrapup-container">
+        <div id="button1" class="wrapup-container">
           <button id="goBackButton" class="back-button" type="button">
             Back
           </button>
-          <button id="createPlaylistButton" class="back-button" type="button">
+          <button id="createButton" class="back-button" type="button">
             Create!
+          </button>
+        </div>
+        <div id="button2" class="wrapup-container">
+          <button id="createVideoButton" class="back-button" type="button">
+            For Creator
+          </button>
+          <button id="createPlaylistButton" class="back-button" type="button">
+            For Listener
           </button>
         </div>
         <div id="playlist"></div>

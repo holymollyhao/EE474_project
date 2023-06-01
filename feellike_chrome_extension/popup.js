@@ -28,6 +28,8 @@ var mood = document.getElementById("mood");
 var genre = document.getElementById("genre");
 var generate_button = document.getElementById("generateButton");
 var goback_button = document.getElementById("goBackButton");
+var create_button = document.getElementById("createButton");
+var createvideo_button = document.getElementById("createVideoButton");
 var createplaylist_button = document.getElementById("createPlaylistButton");
 
 chrome.runtime.sendMessage({ message: "" });
@@ -58,6 +60,34 @@ goBackButton.onclick = function () {
   spinnerContainer.classList.add("hidden");
 };
 
+create_button.onclick = function () {
+  var button1 = document.getElementById("button1");
+  var button2 = document.getElementById("button2");
+
+  button1.style.display = "none";
+  button2.style.display = "block";
+};
+
+createvideo_button.onclick = function () {
+  const nonDeletedItems = Array.from(
+    document.querySelectorAll(".playlist-item")
+  ).map((item) => item.querySelector(".title").textContent);
+
+  const jsonData = {
+    hours: hours.value,
+    mood: mood.value,
+    genre: genre.value,
+    musicArray: nonDeletedItems,
+  };
+  // Perform the action with the non-deleted items list
+  // For example, send the list to the server
+  console.log(nonDeletedItems);
+  chrome.runtime.sendMessage({
+    message: "create_video",
+    jsonData: jsonData,
+  });
+};
+
 createplaylist_button.onclick = function () {
   const nonDeletedItems = Array.from(
     document.querySelectorAll(".playlist-item")
@@ -77,6 +107,7 @@ createplaylist_button.onclick = function () {
     jsonData: jsonData,
   });
 };
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
   if (request.message === "display_musiclist") {
