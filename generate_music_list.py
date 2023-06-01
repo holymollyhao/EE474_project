@@ -29,21 +29,6 @@ def main(args):
     print(music_list)
     music_list = utils.music_validity_check(music_list)
 
-    # print(args.token)
-    # youtube = utils.generate_youtube_credentials(args.token)
-    #
-    # title_list = []
-    # id_list = []
-    # for music in music_list:
-    #     try:
-    #         title, id = utils.youtube_search(youtube, music, 1)
-    #         if (title != 0):
-    #             title_list.append(title)
-    #         if (id != 0):
-    #             id_list.append(id)
-    #     except HttpError as e:
-    #         print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
-    #
     for i in range(len(music_list)):
         print(f"title: {music_list[i]}")
 

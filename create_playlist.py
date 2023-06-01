@@ -11,10 +11,15 @@ def main(args):
     print(args.token)
     playlist_title = f"{args.hours}-h playlist of {args.mood}, {args.genre}"
 
+    print(playlist_title)
     youtube = utils.generate_youtube_credentials(args.token)
     music_list = args.music_array
     title_list = []
     id_list = []
+    print(music_list)
+
+    # parse music_list received from args.music_array
+
     for music in music_list:
         try:
             title, id = utils.youtube_search(youtube, music, 1)
@@ -22,6 +27,7 @@ def main(args):
                 title_list.append(title)
             if (id != 0):
                 id_list.append(id)
+            print(f'added with title{title} and id {id}')
         except HttpError as e:
             print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
             raise Exception
@@ -40,7 +46,7 @@ def parse_arguments(argv):
                         help='genre')
     parser.add_argument('--mood', type=str, default='sentimental',
                         help='mood')
-    parser.add_argument('--music_array', type=str, nargs='+', help='an array of music titles')
+    parser.add_argument('--music_array', type=str, nargs="+", help='an array of music titles')
     parser.add_argument('--token', type=str, help='token')
     return parser.parse_args()
 

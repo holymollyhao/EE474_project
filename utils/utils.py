@@ -163,16 +163,31 @@ def youtube_search(youtube, query, max_results):
 
     return title, id
 
+
+from datetime import datetime
+
 class PlayslistVideoGenerator():
-    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', save_path='./music_dir', save_audio_path='./audio_dir'):
+    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', save_path='./music_dir', save_audio_path='./audio_dir', save_video_path='./video_dir'):
         self.list_of_urls = list_of_urls
         self.cover_imgpath = cover_imgpath
-        self.save_path = save_path
-        self.save_audio_path = save_audio_path
-        self.concat_save_path = None
+
+        self.cur_datetime = datetime.now().strftime("%d_%H:%M:%S")
+        self.save_path = os.path.join(save_path, self.cur_datetime)
+        self.save_audio_path = os.path.join(save_audio_path, self.cur_datetime)
+        self.video_path = os.path.join(save_video_path, self.cur_datetime)
 
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
+        if not os.path.exists(self.save_audio_path):
+            os.makedirs(self.save_audio_path)
+        if not os.path.exists(self.video_path):
+            os.makedirs(self.video_path)
+
+    def return_single_video(self):
+        self.download()
+        audio_path = self.create_audio()
+        video_path = self.create_video(audio_path)
+        return video_path
 
     def download(self):
         import yt_dlp
@@ -229,11 +244,12 @@ class PlayslistVideoGenerator():
         # lets save it!
         with open(output_path_name, 'wb') as out_f:
             playlist.export(out_f, format='mp3')
-        self.concat_save_path = output_path_name
+        return output_path_name
 
-    def create_video(self):
-        videoname = 'debugvideo'
-        audiofpath = self.concat_save_path
+    def create_video(self, audiopath):
+        dtime = datetime.now().strftime("%d_%H:%M:%S")
+        videoname = f'debugvideo{dtime}'
+        audiofpath = audiopath
         imagefpath = self.cover_imgpath
         from moviepy.editor import AudioFileClip, ImageClip
         from PIL import Image, ImageDraw, ImageFont
@@ -251,7 +267,9 @@ class PlayslistVideoGenerator():
         video_clip = image_clip.set_audio(audio_clip)
         video_clip.duration = audio_clip.duration
         video_clip.fps = 60
-        video_clip.write_videofile(videoname + '_CLIP.mp4')
+        video_clip.write_videofile(os.path.join(self.video_path, videoname + '_CLIP.mp4'))
+
+        return os.path.join(self.video_path, videoname + '_CLIP.mp4')
 
 
 # def youtube_build():
