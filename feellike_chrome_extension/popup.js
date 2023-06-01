@@ -60,6 +60,13 @@ goBackButton.onclick = function () {
   playlistForm.classList.remove("hidden");
   playlistContainer.classList.add("hidden");
   spinnerContainer.classList.add("hidden");
+
+  // restore original image
+  var imageContainer = document.getElementById("imageContainer");
+  imageContainer.src = "media/feellike.png";
+  imageContainer.style.borderRadius = "50%";
+  imageContainer.style.width = "160px";
+  imageContainer.style.height = "160px";
 };
 
 create_button.onclick = function () {
