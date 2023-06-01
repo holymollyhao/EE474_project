@@ -65,7 +65,7 @@ goBackButton.onclick = function () {
 
   // restore original image
   var imageContainer = document.getElementById("imageContainer");
-  imageContainer.src = "media/feellike.png";
+  imageContainer.src = "media/feel_like.png";
   imageContainer.style.borderRadius = "50%";
   imageContainer.style.width = "160px";
   imageContainer.style.height = "160px";
@@ -76,7 +76,7 @@ create_button.onclick = function () {
   var button2 = document.getElementById("button2");
 
   button1.style.display = "none";
-  button2.style.display = "block";
+  button2.style.display = "flex";
 };
 
 createvideo_button.onclick = function () {
@@ -169,6 +169,10 @@ function displayResponse(playlist) {
     deleteButton.textContent = "Delete";
     playlistItem.appendChild(deleteButton);
 
+    const img = new Image();
+    img.src = "media/delete.png";
+    deleteButton.appendChild(img);
+
     // Event listener for delete button
     deleteButton.addEventListener("click", function () {
       // Remove the corresponding playlist item from the DOM
@@ -182,6 +186,4 @@ function displayResponse(playlist) {
   // Show the playlist container
   playlistContainer.classList.remove("hidden");
   spinnerContainer.classList.add("hidden");
-
-  // Show the playlist container
 }

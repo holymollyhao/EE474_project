@@ -325,10 +325,13 @@
         align-items: center;
       }
 
+      #playlist {
+        margin-top: 20px;
+      }
       /* Material-UI Styles */
       .playlist-item {
         padding: 12px 0;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid rgba(173, 173, 173, 0.5);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -336,6 +339,36 @@
 
       .playlist-item:last-child {
         border-bottom: none;
+      }
+
+      .playlist-item:hover {
+        background-color: #e0e0e0;
+      }
+
+      /* set backgroud color of playlist-item hover to #ff4081 when dark mode */
+      body.dark-mode .playlist-item:hover {
+        background-color: #404040;
+      }
+
+      .playlist-item .title {
+        padding: 0 5px;
+      }
+
+      .delete-button {
+        /* background-color: #bfbfbf; */
+        color: #fff;
+        border: none;
+        padding: 9px 9px;
+        font-size: 13px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        box-shadow: 0 3px 4px rgb(0 0 0 / 0.1);
+      }
+
+      .delete-button img {
+        width: 16px;
+        height: 16px;
       }
 
       .back-button {
@@ -412,7 +445,6 @@
       </div>
 
       <div id="playlistContainer" class="hidden">
-        <!-- <div id="playlistContainer" class=""> -->
         <div id="button1" class="wrapup-container">
           <button id="goBackButton" class="back-button" type="button">
             Back
