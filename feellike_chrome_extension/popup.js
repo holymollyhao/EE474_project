@@ -128,11 +128,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+function displayImage(image) {
+  var imageContainer = document.getElementById("imageContainer");
+  var image_src = "data:image/png;base64, ";
+  image_src += image;
+
+  imageContainer.src = image_src;
+  imageContainer.style.borderRadius = "0%";
+  imageContainer.style.width = "100%";
+  imageContainer.style.height = "100%";
+}
+
 function displayResponse(playlist) {
   var playlistContainer = document.getElementById("playlistContainer");
   var playlistElement = document.getElementById("playlist");
   var spinnerContainer = document.getElementById("spinnerContainer");
-  // var imageContainer = document.getElementById("imageContainer");
 
   // Clear any previous playlist items
   playlistElement.innerHTML = "";
