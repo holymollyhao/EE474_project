@@ -35,10 +35,12 @@ var createplaylist_button = document.getElementById("createPlaylistButton");
 chrome.runtime.sendMessage({ message: "" });
 
 generate_button.onclick = function () {
+  var date = new Date();
   const jsonData = {
     hours: hours.value,
     mood: mood.value,
     genre: genre.value,
+    date: date.toISOString(),
   };
   chrome.runtime.sendMessage({ message: "send_to_server", jsonData: jsonData });
 
@@ -110,18 +112,20 @@ createplaylist_button.onclick = function () {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
-  if (request.message === "display_musiclist") {
+  if (request.message === "display_response") {
     musiclist = request.musiclist;
+    // image = request.image;
     console.log("musiclist is :");
     console.log(musiclist);
-    displayPlaylist(musiclist);
+    displayResponse(musiclist);
   }
 });
 
-function displayPlaylist(playlist) {
+function displayResponse(playlist) {
   var playlistContainer = document.getElementById("playlistContainer");
   var playlistElement = document.getElementById("playlist");
   var spinnerContainer = document.getElementById("spinnerContainer");
+  // var imageContainer = document.getElementById("imageContainer");
 
   // Clear any previous playlist items
   playlistElement.innerHTML = "";

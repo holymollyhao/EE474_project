@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         hours: request.jsonData.hours,
         mood: request.jsonData.mood,
         genre: request.jsonData.genre,
+        datetime: request.jsonData.date,
         access_token: token,
       };
 
@@ -25,13 +26,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       socket.on("get_music_list_response", function (response) {
         if (response.status == 1) {
           chrome.runtime.sendMessage({
-            message: "display_musiclist",
+            message: "display_response",
             musiclist: response.list_data,
+            // image: response.image,
           });
-          // alert(`Music uploaded!`);
         } else {
           alert(
-            `Music upload failed ㅠㅜ!\nPlease try again after some time...`
+            `Music list & Cover image generation failed ㅠㅜ!\nPlease try again after some time...`
           );
         }
         socket.close();
