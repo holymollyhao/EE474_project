@@ -4,8 +4,14 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const { exec } = require("child_process");
 
-function parsePlaylist(stdout) {
-  const regex = /title: (.*)/g;
+function parseData(stdout, type_of_data) {
+  var regex = "";
+  if (type_of_data == "playlist") {
+    regex = /title: (.*)/g;
+  } else if (type_of_data == "image") {
+    regex = /generated_image_output_path: (.*)/g;
+  }
+
   const matches = stdout.matchAll(regex);
   const playlist = [];
 
@@ -66,14 +72,20 @@ io.sockets.on("connection", function (socket) {
           return;
         }
         console.log("script response!");
-        console.log("stdout!!!!!!!");
-        console.log(stdout);
-        console.log("\n\nparsing!!!!!!!");
-        console.log(parsePlaylist(stdout));
+        console.log(parseData(stdout, "playlist"));
+        console.log(parseData(stdout, "image"));
+
+        const fs = require("fs");
+        const image_path = parseData(stdout, "image");
+        const image = fs.readFileSync(image_path[0].title, {
+          encoding: "base64",
+        });
+
         // Emit the script response to the client
         socket.emit("get_music_list_response", {
           status: 1,
-          list_data: parsePlaylist(stdout),
+          list_data: parseData(stdout, "playlist"),
+          image: image,
         });
       }
     );
@@ -84,11 +96,11 @@ io.sockets.on("connection", function (socket) {
     console.log("Received create_playlist request with JSON data:", jsonData);
     // const parsedData = JSON.parse(jsonData);
 
-      // create a string that can be passed into the python script, space separated, with quotes around each element of jsonData.musicArray
-        let musicArrayString = "";
-        for (let i = 0; i < jsonData.musicArray.length; i++) {
-            musicArrayString += `"${jsonData.musicArray[i]}" `;
-        }
+    // create a string that can be passed into the python script, space separated, with quotes around each element of jsonData.musicArray
+    let musicArrayString = "";
+    for (let i = 0; i < jsonData.musicArray.length; i++) {
+      musicArrayString += `"${jsonData.musicArray[i]}" `;
+    }
 
     // Execute the Python script as a child process
     exec(
@@ -113,11 +125,11 @@ io.sockets.on("connection", function (socket) {
     console.log("Received create_video request with JSON data:", jsonData);
     // const parsedData = JSON.parse(jsonData);
 
-      // create a string that can be passed into the python script, space separated, with quotes around each element of jsonData.musicArray
-        let musicArrayString = "";
-        for (let i = 0; i < jsonData.musicArray.length; i++) {
-            musicArrayString += `"${jsonData.musicArray[i]}" `;
-        }
+    // create a string that can be passed into the python script, space separated, with quotes around each element of jsonData.musicArray
+    let musicArrayString = "";
+    for (let i = 0; i < jsonData.musicArray.length; i++) {
+      musicArrayString += `"${jsonData.musicArray[i]}" `;
+    }
 
     // Execute the Python script as a child process
     exec(

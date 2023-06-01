@@ -1,3 +1,5 @@
+const e = require("express");
+
 // Dark Mode toggle functionality
 const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
 const body = document.querySelector("body");
@@ -114,10 +116,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
   if (request.message === "display_response") {
     musiclist = request.musiclist;
-    // image = request.image;
+    image = request.image;
     console.log("musiclist is :");
     console.log(musiclist);
     displayResponse(musiclist);
+    displayImage(image);
   }
 });
 

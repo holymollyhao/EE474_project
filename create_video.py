@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from vision_language_models.dreamlike import DreamLike
 from utils import utils, parsing
-from datetime import date, datetime
 from apiclient.errors import HttpError
 import argparse
 import sys
@@ -13,10 +12,7 @@ def main(args):
     hours = args.hours
 
     print("running generate music list")
-    # date for logging
-    day = date.today().day
-    current_time = datetime.now().strftime("%H:%M:%S")
-    date_time = str(day) + '_' + current_time
+
 
     # for generating responses
     model = utils.set_openai()
@@ -24,7 +20,7 @@ def main(args):
     response_image = utils.generate_response(model=model, message=message_image)
 
     # for image generation
-    model = DreamLike()
+    model = DreamLike(args.datetime)
     model.single_image_generation(response_image, mood=mood, genre=genre)
 
     # # for generating youtube url list
@@ -53,11 +49,11 @@ def main(args):
     from utils.utils import PlayslistVideoGenerator, youtube_video_upload
     url_list = [f'www.youtube.com/watch?v={id}' for id in id_list]
     cover_imgpath = model.generate_savepath(mood=mood, genre=genre)
-    video_generator = PlayslistVideoGenerator(url_list, cover_imgpath)
+    video_generator = PlayslistVideoGenerator(url_list, cover_imgpath, args.datetime)
     video_path = video_generator.return_single_video()
     print(video_path)
 
-    playlist_title = f"{args.hours}-h playlist of {args.mood}, {args.genre}"
+    playlist_title = f"{hours}-h playlist of {args.mood}, {args.genre}"
     youtube_video_upload(youtube, playlist_title, video_path)
 
 def parse_arguments(argv):
@@ -72,6 +68,8 @@ def parse_arguments(argv):
                         help='mood')
     parser.add_argument('--music_array', type=str, nargs="+", help='an array of music titles')
     parser.add_argument('--token', type=str, help='token', default='ya29.a0AWY7Ckn9Llxa_c86ghrLL4QOSMrxsHIjxm24A9KvTnA-Hsl3agF_WUZbd_lVn_oFy1-UBXJ55KgJA61AW879w-l_7wyDGYfkZFGIcYQFnaz6RtmGPp8O0x4JD2ehy8gIzkxgRNrpy5P_TKycrClFZAm9qKQrNQaCgYKATASARMSFQG1tDrpLfyUKDnNcXjyERGTZzIH5w0165')
+    parser.add_argument('--datetime', type=str, help='datetime', default='NONE')
+
     return parser.parse_args()
 
 if __name__ == "__main__":

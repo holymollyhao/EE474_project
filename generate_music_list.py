@@ -10,19 +10,26 @@ def main(args):
     mood = args.mood # "sentimental", "trendy", "chill"
     genre = args.genre # "jazz", "KPOP", "city pop"
     hours = args.hours
-
+    date_time = args.datetime
     print("running generate music list")
-    # date for logging
-    day = date.today().day
-    current_time = datetime.now().strftime("%H:%M:%S")
-    date_time = str(day) + '_' + current_time
 
     # for generating responses
     model = utils.set_openai()
 
+    # prerequisite for playlist generation
     message_playlist =  utils.construct_message_playlist(hours=hours, mood=mood, genre=genre)
     response_playlist = utils.generate_response(model=model, message=message_playlist)
     utils.save_playlist_response(response_playlist, mood=mood, genre=genre, date_time=date_time)
+
+    # prerequisite for image generation
+    message_image = utils.construct_message_image(mood=mood, genre=genre)
+    response_image = utils.generate_response(model=model, message=message_image)
+    
+    # generate image
+    model = DreamLike(args.datetime)
+    model.single_image_generation(response_image, mood=mood, genre=genre)
+    output_path = model.generate_savepath(mood=mood, genre=genre)
+    print(f"generated_image_output_path: {output_path}")
 
     # parsing playlist
     music_list = parsing.parse_playlist(response_playlist)
@@ -47,6 +54,8 @@ def parse_arguments(argv):
     parser.add_argument('--mood', type=str, default='sentimental',
                         help='mood')
     parser.add_argument('--token', type=str, help='token')
+    parser.add_argument('--datetime', type=str, help='datetime', default='sibaljom')
+
     return parser.parse_args()
 
 if __name__ == "__main__":

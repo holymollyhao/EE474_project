@@ -5,11 +5,11 @@ from datetime import datetime
 
 
 class DreamLike:
-    def __init__(self, model_id="dreamlike-art/dreamlike-photoreal-2.0", result_path="./image_results"):
+    def __init__(self, log_datetime, model_id="dreamlike-art/dreamlike-photoreal-2.0", result_path="./image_results"):
         # model setup
         self.model_id = model_id
         self.result_path = result_path
-        self.date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.date_time = log_datetime
 
         # pipeline setup
         # commandline_args = os.environ.get('COMMANDLINE_ARGS', "--skip-torch-cuda-test --no-half")
@@ -17,8 +17,14 @@ class DreamLike:
         self.pipe.to("cuda")
 
     def single_image_generation(self, prompt, mood, genre):
+        # if already exists path, then simply return
+        if os.path.exists(self.generate_savepath(mood,genre)) == True:
+            return
+
         image = self.pipe(prompt, height=1080, width=1920).images[0]
-        image.save(f"{self.result_path}/mood-{mood}_genre-{genre}_{self.date_time}_result.jpg")
+        image.save(self.generate_savepath(mood, genre))
 
     def generate_savepath(self, mood, genre):
+        mood = mood.replace(" ", "-")
+        genre = genre.replace(" ", "-")
         return f"{self.result_path}/mood-{mood}_genre-{genre}_{self.date_time}_result.jpg"

@@ -10,6 +10,8 @@ def main(args):
     mood = args.mood # "sentimental", "trendy", "chill"
     genre = args.genre # "jazz", "KPOP", "city pop"
     hours = args.hours
+    date_time = args.datetime
+
 
     playlist_title = f"{hours}-h playlist of {mood}, {genre}"
 

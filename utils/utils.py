@@ -167,11 +167,11 @@ def youtube_search(youtube, query, max_results):
 from datetime import datetime
 
 class PlayslistVideoGenerator():
-    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', save_path='./music_dir', save_audio_path='./audio_dir', save_video_path='./video_dir'):
+    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', log_datetime='', save_path='./music_dir', save_audio_path='./audio_dir', save_video_path='./video_dir'):
         self.list_of_urls = list_of_urls
         self.cover_imgpath = cover_imgpath
 
-        self.cur_datetime = datetime.now().strftime("%d_%H:%M:%S")
+        self.cur_datetime = log_datetime
         self.save_path = os.path.join(save_path, self.cur_datetime)
         self.save_audio_path = os.path.join(save_audio_path, self.cur_datetime)
         self.video_path = os.path.join(save_video_path, self.cur_datetime)

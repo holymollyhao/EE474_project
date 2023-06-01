@@ -24,11 +24,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
 
       socket.on("get_music_list_response", function (response) {
+        console.log(response);
         if (response.status == 1) {
           chrome.runtime.sendMessage({
             message: "display_response",
             musiclist: response.list_data,
-            // image: response.image,
+            image: response.image,
           });
         } else {
           alert(
