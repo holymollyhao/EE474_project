@@ -86,6 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         genre: request.jsonData.genre,
         musicArray: request.jsonData.musicArray,
         access_token: token,
+        date: request.jsonData.date,
       };
 
       var socket = io.connect("http://server36.mli.kr:5000/");
