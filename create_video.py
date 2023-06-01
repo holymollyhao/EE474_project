@@ -38,7 +38,7 @@ def main(args):
                 title_list.append(title)
             if (id != 0):
                 id_list.append(id)
-            print(f'added with title{title} and id {id}')
+            # print(f'added with title{title} and id {id}')
         except HttpError as e:
             print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
             raise Exception

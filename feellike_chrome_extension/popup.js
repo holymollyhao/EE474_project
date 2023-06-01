@@ -36,6 +36,8 @@ chrome.runtime.sendMessage({ message: "" });
 
 generate_button.onclick = function () {
   var date = new Date();
+  // store date value to chrome storage
+  chrome.storage.sync.set({ date: date.toISOString() });
   const jsonData = {
     hours: hours.value,
     mood: mood.value,
@@ -82,18 +84,22 @@ createvideo_button.onclick = function () {
     document.querySelectorAll(".playlist-item")
   ).map((item) => item.querySelector(".title").textContent);
 
-  const jsonData = {
-    hours: hours.value,
-    mood: mood.value,
-    genre: genre.value,
-    musicArray: nonDeletedItems,
-  };
-  // Perform the action with the non-deleted items list
-  // For example, send the list to the server
-  console.log(nonDeletedItems);
-  chrome.runtime.sendMessage({
-    message: "create_video",
-    jsonData: jsonData,
+  // read from chrome storage date value
+  chrome.storage.sync.get(["date"], function (result) {
+    const jsonData = {
+      hours: hours.value,
+      mood: mood.value,
+      genre: genre.value,
+      musicArray: nonDeletedItems,
+      date: result,
+    };
+    // Perform the action with the non-deleted items list
+    // For example, send the list to the server
+    console.log(nonDeletedItems);
+    chrome.runtime.sendMessage({
+      message: "create_video",
+      jsonData: jsonData,
+    });
   });
 };
 

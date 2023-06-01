@@ -64,7 +64,7 @@ io.sockets.on("connection", function (socket) {
 
     // Execute the Python script as a child process
     exec(
-      `python generate_music_list.py --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}"`,
+      `python generate_music_list.py --datetime ${jsonData.datetime} --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}"`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing Python script: ${error.message}`);
@@ -133,7 +133,7 @@ io.sockets.on("connection", function (socket) {
 
     // Execute the Python script as a child process
     exec(
-      `python create_video.py --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}" --music_array ${musicArrayString}`,
+      `python create_video.py --datetime ${jsonData.datetime} --hours ${jsonData.hours} --genre "${jsonData.genre}" --mood "${jsonData.mood}" --token "${jsonData.access_token}" --music_array ${musicArrayString}`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing Python script: ${error.message}`);
