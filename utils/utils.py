@@ -17,7 +17,8 @@ from oauth2client.tools import argparser, run_flow
 # tab of
 #   https://cloud.google.com/console
 # Please ensure that you have enabled the YouTube Data API for your project.
-DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
+# DEVELOPER_KEY = "AIzaSyCSUzk-oyjszho49HWVbebIlWV47lS7zZs"
+DEVELOPER_KEY = "AIzaSyD_YeJO6SVbzkaVi63NdUC_OyEsYISFmWs" #temp
 YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
@@ -165,6 +166,7 @@ def youtube_search(youtube, query, max_results):
             title = search_result["snippet"]["title"]
             id = search_result["id"]["videoId"]
 
+<<<<<<< HEAD
     return title, id
 
 
@@ -319,6 +321,124 @@ class PlayslistVideoGenerator():
 #     youtube = build("youtube", "v3", credentials=credentials)
 #     print("youtube build complete!")
 #     return youtube
+=======
+    return title, id 
+
+def download_youtube(list_of_urls = ['https://www.youtube.com/watch?v=NaFd8ucHLuo', 'https://www.youtube.com/watch?v=WMweEpGlu_U', 'https://www.youtube.com/watch?v=4TWR90KJl84']):
+    # from __future__ import unicode_literals
+    import yt_dlp
+    SAVE_PATH='music_dir'
+    class MyLogger(object):
+        def debug(self, msg):
+            pass
+
+        def warning(self, msg):
+            pass
+
+        def error(self, msg):
+            print(msg)
+
+    def my_hook(d):
+        if d['status'] == 'finished':
+            print('Done downloading, now converting ...')
+
+    for (idx, url) in enumerate(list_of_urls):
+        yt_dlp_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
+            'outtmpl': SAVE_PATH + f'/track_{idx}.%(ext)s',
+        }
+        with yt_dlp.YoutubeDL(yt_dlp_opts) as ydl:
+            ydl.download([url])
+
+    output_path_name = generate_concat_music(audio_fpath='./music_dir/')
+    generate_video(audiofpath=output_path_name)
+
+
+def generate_concat_music(audio_fpath=None):
+    from pydub import AudioSegment
+    playlist_songs = []
+    for audio_file in os.listdir(audio_fpath):
+        if '.mp3' in audio_file:
+            playlist_songs.append(AudioSegment.from_mp3(os.path.join(audio_fpath, audio_file)))
+
+    first_song = playlist_songs.pop(0)
+    playlist = first_song
+
+    for song in playlist_songs:
+        # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
+        playlist = playlist.append(song, crossfade=(5 * 1000))
+    playlist = playlist.fade_out(30)
+
+    playlist_length = len(playlist) / (1000 * 60)
+    output_path_name = "%s_minute_playlist.mp3" % playlist_length
+    # lets save it!
+    with open(output_path_name, 'wb') as out_f:
+        playlist.export(out_f, format='mp3')
+    return output_path_name
+
+
+
+
+def generate_video(fileSaveName='debug_playlist', audiofpath='./9.7685_minute_playlist.mp3', imagefpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg'):
+    from moviepy.editor import AudioFileClip, ImageClip
+    from PIL import Image, ImageDraw, ImageFont
+    im = Image.open(imagefpath)
+    draw = ImageDraw.Draw(im)
+    font = ImageFont.truetype(r'./fonts/Open_Sans/opensans_bold_italic.ttf', 350)
+    msg = 'feel_like'
+    _, _, w, h = draw.textbbox((0, 0), msg, font=font)
+    draw.text(((im.width - w) / 2, (im.height - h) / 2), msg, font=font, fill="white")
+
+    im.save(imagefpath)
+    #
+    # audio_clip = AudioFileClip(audiofpath)
+    # image_clip = ImageClip(imagefpath)
+    # video_clip = image_clip.set_audio(audio_clip)
+    # video_clip.duration = audio_clip.duration
+    # video_clip.fps = 60
+    # video_clip.write_videofile(fileSaveName + '_CLIP.mp4')
+
+def youtube_build():
+    CLIENT_SECRETS_FILE = "client_secret_350098661559-kveh7m4c59argu1mb1h2kniajgma6uan.apps.googleusercontent.com.json"
+    MISSING_CLIENT_SECRETS_MESSAGE = """
+    WARNING: Please configure OAuth 2.0
+
+    To make this sample run you will need to populate the client_secrets.json file
+    found at:
+
+    %s
+
+    with information from the API Console
+    https://console.cloud.google.com/
+
+    For more information about the client_secrets.json file format, please visit:
+    https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
+    """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                    CLIENT_SECRETS_FILE))
+
+    flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
+      message=MISSING_CLIENT_SECRETS_MESSAGE,
+        scope=YOUTUBE_READ_WRITE_SCOPE)
+
+    storage = Storage("%s-oauth2.json" % sys.argv[0])
+    credentials = storage.get()
+
+    if credentials is None or credentials.invalid:
+        flags = argparser.parse_args()
+        credentials = run_flow(flow, storage, flags)
+
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+        http=credentials.authorize(httplib2.Http()))
+    
+    return youtube
+>>>>>>> 93ea155d85618d739d6c7b252b4776a68117e5fc
 
 def youtube_create_playlist(youtube, title, privacyStatus="public"):
     # This code creates a new, private playlist in the authorized user's channel.
@@ -337,7 +457,7 @@ def youtube_create_playlist(youtube, title, privacyStatus="public"):
 
     return playlists_insert_response["id"]
 
-def youtube_insert_music(youtube, playlist_id, id_list):
+def youtube_insert_videos(youtube, playlist_id, id_list):
     for videoId in id_list:
         youtube.playlistItems().insert(
             part="snippet",
