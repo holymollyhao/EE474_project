@@ -1,0 +1,474 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feel Like</title>
+    <style>
+      /* Beautiful CSS styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 400px;
+        background-color: #00000000;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .image-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .image-container img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .button-container {
+        text-align: center;
+      }
+
+      .button {
+        background-color: #ff4081;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #e91e63;
+      }
+
+      /* Dark Mode */
+      body.dark-mode {
+        background-color: #333;
+        color: #f9f9f9;
+      }
+
+      .container.dark-mode {
+        background-color: #00000000;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .form-group label.dark-mode {
+        color: #f9f9f9;
+      }
+
+      .form-group input.dark-mode {
+        background-color: #555;
+        color: #f9f9f9;
+        border: 1px solid #777;
+      }
+
+      .button-container.dark-mode {
+        text-align: center;
+      }
+
+      .button.dark-mode {
+        background-color: #ff4081;
+        color: #fff;
+      }
+
+      .button.dark-mode:hover {
+        background-color: #e91e63;
+      }
+      .hidden {
+        display: none;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .wrapup-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Feel Like</h1>
+      </div>
+      <div class="image-container">
+        <img src="media/feel_like.png" alt="Feel Like Image" />
+      </div>
+      <form id="playlistForm">
+        <div class="form-group">
+          <label for="hours">Hour</label>
+          <input type="text" id="hours" placeholder="1" />
+        </div>
+        <div class="form-group">
+          <label for="mood">Mood</label>
+          <input type="text" id="mood" placeholder="Sentimental" />
+        </div>
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input type="text" id="genre" placeholder="Jazz" />
+        </div>
+        <div class="button-container">
+          <button id="generateButton" class="button" type="button">
+            Make Playlist!
+          </button>
+        </div>
+      </form>
+      <div class="wrapup-container">
+        <div id="spinnerContainer" class="hidden">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <div id="playlistContainer" class="hidden">
+        <button id="goBackButton" class="button" type="button">Go Back</button>
+        <ul id="playlist"></ul>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=2.0" />
+    <title>Feel Like</title>
+    <style>
+      /* Beautiful CSS styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        min-width: 300px;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 1000px;
+        background-color: #00000000;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .image-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .image-container img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .button-container {
+        padding-top: 10px;
+        text-align: center;
+      }
+
+      .button-container button {
+        width: 100%;
+      }
+
+      .button {
+        background-color: #ff4081;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #e91e63;
+      }
+
+      /* Dark Mode */
+      body.dark-mode {
+        background-color: #333;
+        color: #f9f9f9;
+      }
+
+      .container.dark-mode {
+        background-color: #00000000;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .form-group label.dark-mode {
+        color: #f9f9f9;
+      }
+
+      .form-group input.dark-mode {
+        background-color: #555;
+        color: #f9f9f9;
+        border: 1px solid #777;
+      }
+
+      .button-container.dark-mode {
+        text-align: center;
+      }
+
+      .button.dark-mode {
+        background-color: #ff4081;
+        color: #fff;
+      }
+
+      .button.dark-mode:hover {
+        background-color: #e91e63;
+      }
+
+      .hidden {
+        display: none;
+      }
+      .wrapup-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #playlist {
+        margin-top: 20px;
+      }
+      /* Material-UI Styles */
+      .playlist-item {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(173, 173, 173, 0.5);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .playlist-item:last-child {
+        border-bottom: none;
+      }
+
+      .playlist-item:hover {
+        background-color: #e0e0e0;
+      }
+
+      /* set backgroud color of playlist-item hover to #ff4081 when dark mode */
+      body.dark-mode .playlist-item:hover {
+        background-color: #404040;
+      }
+
+      .playlist-item .title {
+        padding: 0 5px;
+      }
+
+      .delete-button {
+        /* background-color: #bfbfbf; */
+        color: #fff;
+        border: none;
+        padding: 9px 9px;
+        margin-right: 9px;
+        font-size: 13px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        box-shadow: 0 3px 4px rgb(0 0 0 / 0.1);
+      }
+
+      .delete-button img {
+        width: 16px;
+        height: 16px;
+      }
+
+      .back-button {
+        background-color: #ff4081;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        animation: spin 1s linear infinite;
+      }
+
+      .back-button:hover {
+        background-color: #e91e63;
+      }
+
+      #button2 {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Feel Like</h1>
+      </div>
+      <div class="image-container">
+        <img
+          id="imageContainer"
+          src="media/feel_like.png"
+          alt="Feel Like Image"
+        />
+      </div>
+      <form id="playlistForm">
+        <div class="form-group">
+          <label for="hours">Hour</label>
+          <input type="text" id="hours" placeholder="1" />
+        </div>
+        <div class="form-group">
+          <label for="mood">Mood</label>
+          <input type="text" id="mood" placeholder="Sentimental" />
+        </div>
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input type="text" id="genre" placeholder="Jazz" />
+        </div>
+        <div class="button-container">
+          <button id="generateButton" class="button" type="button">
+            Make Playlist!
+          </button>
+        </div>
+      </form>
+      <div class="wrapup-container">
+        <div id="spinnerContainer" class="hidden">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <div id="playlistContainer" class="hidden">
+        <div id="button1" class="wrapup-container">
+          <button id="goBackButton" class="back-button" type="button">
+            Back
+          </button>
+          <button id="createButton" class="back-button" type="button">
+            Create!
+          </button>
+        </div>
+        <div id="button2" class="wrapup-container">
+          <button id="goBack2Button" class="back-button" type="button">
+            Back
+          </button>
+          <button id="createVideoButton" class="back-button" type="button">
+            Video
+          </button>
+          <button id="createPlaylistButton" class="back-button" type="button">
+            Playlist
+          </button>
+        </div>
+        <div id="playlist"></div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

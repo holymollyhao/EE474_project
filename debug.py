@@ -1,5 +1,7 @@
 import time
+from utils.utils import *
 
-time.sleep(3)
+
+music_validity_check(['Plastics Love - Mariya Takeuchi'])
 
 print("hello world")

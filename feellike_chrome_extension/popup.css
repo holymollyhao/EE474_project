@@ -1,0 +1,45 @@
+@font-face {
+  font-family: "Helvetica";
+  src: url("fonts/HelveticaNeueLTPro-Th.otf") format("truetype");
+}
+
+body {
+  font-family: "Helvetica";
+}
+
+#wholepopup {
+  background: rgb(52, 174, 202);
+}
+
+#popup {
+  width: 250px;
+}
+
+#onoff {
+  display: inline-block;
+  float: right;
+}
+
+#onoff_text {
+  display: inline-block;
+  margin-left: 7px;
+}
+
+.button {
+  place-content: center center;
+  width: 100%;
+}
+
+input {
+  /* text-align: center; */
+}
+
+hr {
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+}

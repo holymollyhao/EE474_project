@@ -1,0 +1,27 @@
+{
+  "name": "Feel Like",
+  "version": "1.0",
+  "icons": {
+    "16": "media/icon16.png",
+    "32": "media/icon32.png",
+    "96": "media/icon96.png"
+  },
+  "manifest_version": 2,
+  "browser_action": {
+    "default_icon": "media/feel_like.png",
+    "default_popup": "popup.html",
+    "default_title": "Feel Like"
+  },
+  "background": {
+    "scripts": ["background.js", "socket.io/socket.io.js"],
+    "persistent": false
+  },
+  "oauth2": {
+    "client_id": "233587416449-1fvgqp940knj4mjemog5c4l387m6q0l1.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/youtube"]
+  },
+  "externally_connectable": {
+    "ids": ["lgalclnegfckhlpkcadaneeiepanfajh"]
+  },
+  "permissions": ["storage", "notifications", "identity"]
+}

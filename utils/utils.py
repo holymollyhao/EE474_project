@@ -79,22 +79,72 @@ def save_playlist_response(response_playlist, mood, genre, date_time):
     text_file.write(response_playlist)
     text_file.close
 
-def read_playlist(mood, genre, date_time):
-    result_path = "./playlist_results"
-    with open(f"{result_path}/mood-{mood}_genre-{genre}_{date_time}_result.txt", "r") as file: 
-        song_list = [line.strip() for line in file]
-    return song_list
-
-def save_audio_features(audio_features, mood, genre, date_time):
-    result_path = "./playlist_results"
-    with open(f"{result_path}/mood-{mood}_genre-{genre}_{date_time}_audio_features.txt", "w") as file:
-        for feature in audio_features:
-            file.write(str(feature) + "\n")
 
 def youtube_search(query, max_results):
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
         developerKey=DEVELOPER_KEY)
+def generate_youtube_credentials(auth_token):
+    from googleapiclient.discovery import build
+    from oauth2client import client, GOOGLE_TOKEN_URI
+    # Obtain the token using chrome.identity.getAuthToken
+    token = auth_token
+    # Create credentials from the token
+    credentials = client.AccessTokenCredentials(access_token=token, user_agent="pythonclient")
+    # credentials.refresh(httplib2.Http())
 
+    # Build the YouTube service with authorized credentials
+    youtube = build("youtube", "v3", credentials=credentials)
+    return youtube
+
+def music_validity_check(music_list:list):
+    import requests
+
+    url = "https://accounts.spotify.com/api/token"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": "2f01a5b72ffc40f1b063ab40ead654ae",
+        "client_secret": "78e0836263d24590b5670ddc434c18e5"
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check the response status code
+    if response.status_code == 200:
+        access_token = response.json()["access_token"]
+        # print("Access token:", access_token)
+
+        output_music_list = []
+        for music in music_list:
+            search_url = "https://api.spotify.com/v1/search"
+            search_headers = {
+                "Authorization": f"Bearer {access_token}"
+            }
+            search_params = {
+                "q": f"{str(music)}",
+                "limit": 1,
+                "type": "track",
+                "include_external": "audio"
+            }
+            response = requests.get(search_url, headers=search_headers, params=search_params).json()
+
+            if len(response):
+                response = response["tracks"]["items"]
+                # print(response)
+                song_name = response[0]['name']
+                artist_name = response[0]['artists'][0]['name']
+
+                # print(f"{song_name} - {artist_name}")
+                output_music_list.append(f"{song_name} - {artist_name}")
+
+        return output_music_list
+    else:
+        print("Error:", response.text)
+        return music_list
+
+
+
+def youtube_search(youtube, query, max_results):
     # Call the search.list method to retrieve results matching the specified
     # query term.
     search_response = youtube.search().list(
@@ -117,16 +167,31 @@ def youtube_search(query, max_results):
 
     return title, id
 
+
+from datetime import datetime
+
 class PlayslistVideoGenerator():
-    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', save_path='./music_dir', save_audio_path='./audio_dir'):
+    def __init__(self, list_of_urls, cover_imgpath='./image_results/mood-chill vibe_genre-city pop_24_15:52:01_result.jpg', log_datetime='', save_path='./music_dir', save_audio_path='./audio_dir', save_video_path='./video_dir'):
         self.list_of_urls = list_of_urls
         self.cover_imgpath = cover_imgpath
-        self.save_path = save_path
-        self.save_audio_path = save_audio_path
-        self.concat_save_path = None
+
+        self.cur_datetime = log_datetime
+        self.save_path = os.path.join(save_path, self.cur_datetime)
+        self.save_audio_path = os.path.join(save_audio_path, self.cur_datetime)
+        self.video_path = os.path.join(save_video_path, self.cur_datetime)
 
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
+        if not os.path.exists(self.save_audio_path):
+            os.makedirs(self.save_audio_path)
+        if not os.path.exists(self.video_path):
+            os.makedirs(self.video_path)
+
+    def return_single_video(self):
+        self.download()
+        audio_path = self.create_audio()
+        video_path = self.create_video(audio_path)
+        return video_path
 
     def download(self):
         import yt_dlp
@@ -183,11 +248,12 @@ class PlayslistVideoGenerator():
         # lets save it!
         with open(output_path_name, 'wb') as out_f:
             playlist.export(out_f, format='mp3')
-        self.concat_save_path = output_path_name
+        return output_path_name
 
-    def create_video(self):
-        videoname = 'debugvideo'
-        audiofpath = self.concat_save_path
+    def create_video(self, audiopath):
+        dtime = datetime.now().strftime("%d_%H:%M:%S")
+        videoname = f'debugvideo{dtime}'
+        audiofpath = audiopath
         imagefpath = self.cover_imgpath
         from moviepy.editor import AudioFileClip, ImageClip
         from PIL import Image, ImageDraw, ImageFont
@@ -205,42 +271,54 @@ class PlayslistVideoGenerator():
         video_clip = image_clip.set_audio(audio_clip)
         video_clip.duration = audio_clip.duration
         video_clip.fps = 60
-        video_clip.write_videofile(videoname + '_CLIP.mp4')
+        video_clip.write_videofile(os.path.join(self.video_path, videoname + '_CLIP.mp4'))
+
+        return os.path.join(self.video_path, videoname + '_CLIP.mp4')
 
 
-def youtube_build():
-    CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
-    MISSING_CLIENT_SECRETS_MESSAGE = """
-    WARNING: Please configure OAuth 2.0
-
-    To make this sample run you will need to populate the client_secrets.json file
-    found at:
-
-    %s
-
-    with information from the API Console
-    https://console.cloud.google.com/
-
-    For more information about the client_secrets.json file format, please visit:
-    https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-    """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                    CLIENT_SECRETS_FILE))
-
-    flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
-      message=MISSING_CLIENT_SECRETS_MESSAGE,
-        scope=YOUTUBE_READ_WRITE_SCOPE)
-
-    storage = Storage("%s-oauth2.json" % sys.argv[0])
-    credentials = storage.get()
-
-    if credentials is None or credentials.invalid:
-        flags = argparser.parse_args()
-        credentials = run_flow(flow, storage, flags)
-
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-        http=credentials.authorize(httplib2.Http()))
-    
-    return youtube
+# def youtube_build():
+#     # CLIENT_SECRETS_FILE = "client_secret_647007276977-akf94ejk5o5u848vll5esuhq3qdrb0bv.apps.googleusercontent.com.json"
+#     # MISSING_CLIENT_SECRETS_MESSAGE = """
+#     # WARNING: Please configure OAuth 2.0
+#     #
+#     # To make this sample run you will need to populate the client_secrets.json file
+#     # found at:
+#     #
+#     # %s
+#     #
+#     # with information from the API Console
+#     # https://console.cloud.google.com/
+#     #
+#     # For more information about the client_secrets.json file format, please visit:
+#     # https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
+#     # """ % os.path.abspath(os.path.join(os.path.dirname(__file__),
+#     #                                 CLIENT_SECRETS_FILE))
+#     #
+#     # flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
+#     #   message=MISSING_CLIENT_SECRETS_MESSAGE,
+#     #     scope=YOUTUBE_READ_WRITE_SCOPE)
+#     #
+#     # storage = Storage("%s-oauth2.json" % sys.argv[0])
+#     # credentials = storage.get()
+#     #
+#     # if credentials is None or credentials.invalid:
+#     #     flags = argparser.parse_args()
+#     #     credentials = run_flow(flow, storage, flags)
+#     #
+#     # youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+#     #     http=credentials.authorize(httplib2.Http()))\
+#     from googleapiclient.discovery import build
+#     from oauth2client import client, GOOGLE_TOKEN_URI
+#     # Obtain the token using chrome.identity.getAuthToken
+#     token = "ya29.a0AWY7CknUMyKUr5ZvIw6zLt6AHHmjafCAV6hXNgNrnqi4npDjVtDgP8MrCr-BikTXKZNkMk5PUW7RS_VfpPjCuxFSJv1WWXB0zC0KIBmVOrO2PQxHBe9h3Cnpxkjj4SOIyqAXsiepT3TdJ-wyWW9-CqP9WEoUaCgYKAe0SARMSFQG1tDrpRxHeIgh4t9Aq2QTOLCtjUg0163"
+#
+#     # Create credentials from the token
+#     credentials = client.AccessTokenCredentials(token, "MY_USER_AGENT")
+#
+#     # Build the YouTube service with authorized credentials
+#     youtube = build("youtube", "v3", credentials=credentials)
+#     print("youtube build complete!")
+#     return youtube
 
 def youtube_create_playlist(youtube, title, privacyStatus="public"):
     # This code creates a new, private playlist in the authorized user's channel.
