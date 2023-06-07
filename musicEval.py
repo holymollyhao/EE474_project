@@ -53,19 +53,19 @@ def save_audio_features(audio_features_list, mood, genre):
     num_songs = len(audio_features_list)
 
     with open(filename, 'w') as file:
-        
-        file.write("\nSong-wise Audio Features:\n")
         for features in audio_features_list:
             file.write(str(features) + '\n')
 
     return filename
 
-# Change this part to make example evaluation result
-playlist1 = main("soft and calm", "Lullaby", 1)
-playlist2 = "lullaby.txt"
+### Change this part to make example evaluation result ###
+playlist1 = main("dancing", "hiphop", 1)
+### Add default handmade txt in format of "title - artist" + "\n" ###
+#playlist2 = "dancehh.txt"
 
 pl1 = audiofeature(playlist1)
-pl2 = audiofeature(playlist2)
+#pl2 = audiofeature(playlist2)
 
-file1 = save_audio_features(pl1, "soft", "Lullaby")
-file2 = save_audio_features(pl2, "humanmade_soft", "Lullaby")
+### Change the title here ###
+file1 = save_audio_features(pl1, "dancing", "hiphop")
+#file2 = save_audio_features(pl2, "humanmade_dancing", "hiphop")

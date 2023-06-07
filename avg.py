@@ -69,6 +69,6 @@ def calculate_average(file_path):
         'tempo': avg_tempo
     }
 
-# input: text file name, after musicEval.py execution, 
-print(calculate_average("music_features_result/audio_features_mood-soft_genre-Lullaby.txt"))
-print(calculate_average("music_features_result/audio_features_mood-humanmade_soft_genre-Lullaby.txt"))
+# input: text file name, after musicEval.py execution, which is in the "music_features_result" directory ##
+print(calculate_average("./music_features_result/audio_features_mood-dancing_genre-hiphop.txt"))
+#print(calculate_average("music_features_result/audio_features_mood-humanmade_soft_genre-Lullaby.txt"))
